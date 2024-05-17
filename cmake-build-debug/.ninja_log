@@ -1,0 +1,14 @@
+# ninja log v5
+3	79	1715952534009719621	lib/libgtest.a	3f815e369740055d
+1	84	1715952559970110220	build.ninja	c6336b110fba9e57
+1	3941	1715952515385439372	googletest/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o	6666063e43f84082
+1	2374	1715952513825415897	googletest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o	f553df7348777baf
+1	496	1715952511949387666	CMakeFiles/FFT.dir/FastFourierTransform.cpp.o	3c411afc50959757
+1	1130	1715952512581397177	googletest/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o	25ce9db6a8a3753
+1	1420	1715952512873401571	googletest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o	c0451b66f4c6cf83
+5	13	1715952574118323070	lib/libgtest_main.a	58f857042e2e0e02
+5	37	1715952574142323431	lib/libgmock.a	25199b4e144bde18
+37	45	1715952574150323551	lib/libgmock_main.a	b0a186ecee68ac3e
+5	424	1715952574530329268	CMakeFiles/FFT.dir/FastFourierTransform.cpp.o	a9d9710926cb09b8
+5	1656	1715952575758347742	CMakeFiles/FFT.dir/tests.cpp.o	fb5ef94457ebe560
+1656	1794	1715952575894349788	FFT	60e36b32e3d89fb6
