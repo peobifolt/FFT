@@ -7,5 +7,5 @@
 прямое, а потом обратное преобразование Фурье.
 3. Сравнить ошибку между входными и выходными данными.
 
-Решение находится в файле [FastFourierTransform.cpp](https://github.com/peobifolt/FFT/blob/main/FastFourierTransform.cpp])
-Запуск на случайном большом тесте в файле [tests.cpp](https://github.com/peobifolt/FFT/blob/main/tests.cpp]) в тесте test_big_numbers.
+Решение находится в файле [FastFourierTransform.h](https://github.com/peobifolt/FFT/blob/main/FastFourierTransform.h)
+Запуск на случайном большом тесте в файле [tests.cpp](https://github.com/peobifolt/FFT/blob/main/tests.cpp) в тесте test_big_numbers.
