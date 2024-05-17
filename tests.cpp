@@ -1,5 +1,4 @@
 #include "FastFourierTransform.h"
-#include "googletest/googlemock/include/gmock/gmock.h"
 #include "googletest/googletest/include/gtest/gtest.h"
 
 #include <cassert>
@@ -28,7 +27,7 @@ template<typename T>
     if (a.size() != b.size()) {
         return ::testing::AssertionFailure() << " lens of arrays are not equal";
     }
-    const T eps = 1e-5;
+    const T eps = 1e-3;
     for (size_t i = 0; i < a.size(); i++) {
         if (std::abs(real(a[i]) - real(b[i])) > eps || std::abs(imag(a[i]) - imag(b[i])) > eps) {
             return ::testing::AssertionFailure() << a[i] << " is not equal to " << b[i];

@@ -12,7 +12,7 @@ class FastFourierTransform {
     using complex_t = std::complex<DOUBLE_TYPE>;
 
     /**
-     * Returns true if n = 2^k, 3 * 2^n or 5 * 2^n.
+     * Returns true if n = 2^k * 3^m * 5^p.
      * @param n a number
      * @return condition for n
      */
@@ -20,7 +20,13 @@ class FastFourierTransform {
         while (n % 2 == 0) {
             n /= 2;
         }
-        return n <= 5;
+        while (n % 3 == 0) {
+            n /= 3;
+        }
+        while (n % 5 == 0) {
+            n /= 5;
+        }
+        return n == 1;
     }
 
     /**
@@ -30,7 +36,7 @@ class FastFourierTransform {
      */
     static void extend(std::vector<complex_t> &a) {
         size_t n = a.size();
-        while (n == 0 || !only235(n)) {
+        while (!only235(n)) {
             n++;
         }
         a.resize(n);
@@ -48,59 +54,62 @@ class FastFourierTransform {
 
 public:
     /**
-     * Does the Fourier transform. Extends array {@code a} for 2^n, 3 * 2^n or 5 * 2^n.
+     * Does the Fourier transform. Extends array {@code a} for 2^n * 3^m * 5^k.
      * Result puts in array {@code a}.
      * @param a a polynomial
      */
     static void fft(std::vector<complex_t> &a) {
         extend(a);
         size_t n = a.size();
-        while (n % 2 == 0) {
-            std::vector<complex_t> tmp(n);
-            for (size_t i = 0; i < a.size(); i += n) {
-                for (size_t j = 0; j < n / 2; j++) {
-                    tmp[j] = a[i + j * 2];
-                    tmp[j + n / 2] = a[i + j * 2 + 1];
-                }
-                std::copy(tmp.begin(), tmp.end(), a.begin() + i);
-            }
-            n /= 2;
-        }
-        if (n > 1) {
-            assert(n == 3 || n == 5);
-            complex_t w_n = get_w(n);
-            std::vector<complex_t> values(n);
-            for (size_t i = 0; i < a.size(); i += n) {
-                fill(values.begin(), values.end(), 0);
-                complex_t w_cur = 1;
-                for (size_t j = 0; j < n; j++) {
-                    complex_t st = 1;
-                    for (size_t k = 0; k < n; k++) {
-                        values[j] += st * a[i + k];
-                        st *= w_cur;
+        for (size_t p : {2, 3, 5}) {
+            while (n % p == 0) {
+                std::vector<complex_t> tmp(n);
+                for (size_t i = 0; i < a.size(); i += n) {
+                    for (size_t j = 0; j < p; j++) {
+                        for (size_t k = 0; k * p < n; k++) {
+                            tmp[j * (n / p) + k] = a[i + k * p + j];
+                        }
                     }
-                    w_cur *= w_n;
+                    copy(tmp.begin(), tmp.end(), a.begin() + i);
                 }
-                std::copy(values.begin(), values.end(), a.begin() + i);
+                n /= p;
             }
         }
-        for (; n < a.size(); n *= 2) {
-            complex_t w_n = get_w(n * 2);
-            for (size_t i = 0; i < a.size(); i += n * 2) {
-                complex_t st = 1;
-                for (size_t j = 0; j < n; j++) {
-                    complex_t u = a[i + j];
-                    complex_t v = a[i + j + n] * st;
-                    a[i + j] = u + v;
-                    a[i + j + n] = u - v;
-                    st *= w_n;
+        for (size_t p : {5, 3, 2}) {
+            while (a.size() % (p * n) == 0) {
+                complex_t w_n = get_w(n * p);
+                complex_t w_step_n = 1;  // w^n
+                for (size_t i = 0; i < n; i++) {
+                    w_step_n *= w_n;
                 }
+                std::vector<complex_t> tmp(p);
+                for (size_t i = 0; i < a.size(); i += n * p) {
+                    complex_t w_step_j = 1;  // w^j
+                    for (size_t j = 0; j < n; j++) {
+                        fill(tmp.begin(), tmp.end(), 0);
+                        complex_t w_step_nk = 1;  // w^(nk)
+                        for (size_t k = 0; k < p; k++) {
+                            complex_t w_step_j_plus_nk = w_step_j * w_step_nk;  // w^(j + nk)
+                            complex_t w_step_s_mul_j_plus_nk = 1;  // w^(s*(j + nk))
+                            for (size_t s = 0; s < p; s++) {
+                                tmp[k] += a[i + j + s * n] * w_step_s_mul_j_plus_nk;
+                                w_step_s_mul_j_plus_nk *= w_step_j_plus_nk;
+                            }
+                            w_step_nk *= w_step_n;
+                        }
+                        for (size_t k = 0; k < p; k++) {
+                            a[i + j + k * n] = tmp[k];
+                        }
+                        w_step_j *= w_n;
+                    }
+                }
+                n *= p;
             }
         }
     }
 
     /**
-     * Does the invert Fourier transform. Extends array {@code a} for 2^n, 3 * 2^n or 5 * 2^n.
+     * Does the invert Fourier transform. Extends array {@code a} for 2^n * 3^m * 5^k.
      * Result puts in array {@code a}.
      * @param a a polynomial
      */
